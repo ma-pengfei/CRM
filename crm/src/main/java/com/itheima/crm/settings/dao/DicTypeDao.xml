@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace属性是名称空间，必须唯一  接口的全限定类名-->
+<mapper namespace="com.itheima.crm.settings.dao.DicTypeDao">
+
+    <select id="getTypeList" resultType="DicType">
+        select * from tbl_dic_type;
+    </select>
+</mapper>

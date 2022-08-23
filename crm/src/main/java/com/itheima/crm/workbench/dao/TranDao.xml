@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.crm.workbench.dao.TranDao">
+
+
+    <insert id="addTran">
+        insert into tbl_tran (id,owner,money,name,expectedDate,customerId,stage,type,source,activityId,contactsId,createBy,createTime,description,contactSummary,nextContactTime)
+        values (#{id},#{owner},#{money},#{name},#{expectedDate},#{customerId},#{stage},#{type},#{source},#{activityId},#{contactsId},#{createBy},#{createTime},#{description},#{contactSummary},#{nextContactTime});
+    </insert>
+    <select id="getTranList" resultType="Tran">
+        select
+            t.id,
+            u.name as owner,
+            t.money,
+            t.name,
+            t.expectedDate,
+            cus.name as customerId,
+            t.stage,
+            t.type,
+            t.source,
+            a.name as activityId,
+            con.fullname as contactsId,
+            t.createBy,
+            t.createTime,
+            t.editBy,
+            t.editTime,
+            t.description,
+            t.contactSummary,
+            t.nextContactTime
+        from tbl_tran t
+            join tbl_user u on u.id=t.owner
+            join tbl_customer cus on cus.id=t.customerId
+            left join tbl_contacts con on con.id=t.contactsId
+            left join tbl_activity a on a.id = t.activityId
+        <where>
+            <if test="owner != null and owner != ''">
+                and u.name like '%' #{owner} '%'
+            </if>
+            <if test="name != null and name != ''">
+                and t.name like '%' #{name} '%'
+            </if>
+            <if test="customer != null and customer != ''">
+                and cus.name like '%' #{customer} '%'
+            </if>
+            <if test="stage != null and stage != ''">
+                and t.stage = #{stage}
+            </if>
+            <if test="source != null and source != ''">
+                and t.source = #{source}
+            </if>
+            <if test="type != null and type != ''">
+                and t.type = #{type}
+            </if>
+            <if test="contacts != null and contacts != ''">
+                and con.fullname like '%' #{contacts} '%'
+            </if>
+        </where>
+        order by t.createTime desc
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getTotal" resultType="java.lang.Integer">
+        select
+            count(*)
+        from tbl_tran t
+        join tbl_user u on u.id=t.owner
+        join tbl_customer cus on cus.id=t.customerId
+        join tbl_contacts con on con.id=t.contactsId
+        <where>
+            <if test="owner != null and owner != ''">
+                and u.name like '%' #{owner} '%'
+            </if>
+            <if test="name != null and name != ''">
+                and t.name like '%' #{name} '%'
+            </if>
+            <if test="customer != null and customer != ''">
+                and cus.name like '%' #{customer} '%'
+            </if>
+            <if test="stage != null and stage != ''">
+                and t.stage = #{stage}
+            </if>
+            <if test="source != null and source != ''">
+                and t.source = #{source}
+            </if>
+            <if test="type != null and type != ''">
+                and t.type = #{type}
+            </if>
+            <if test="contacts != null and contacts != ''">
+                and con.fullname like '%' #{contacts} '%'
+            </if>
+        </where>
+    </select>
+    <select id="detail" resultType="Tran">
+        select
+               t.id,
+               u.name as owner,
+               t.money,
+               t.name,
+               t.expectedDate,
+               cus.name as customerId,
+               t.stage,
+               t.type,
+               t.source,
+               a.name as activityId,
+               con.fullname as contactsId,
+               t.createBy,
+               t.createTime,
+               t.editBy,
+               t.editTime,
+               t.description,
+               t.contactSummary,
+               t.nextContactTime
+        from tbl_tran t
+                 join tbl_user u on u.id=t.owner
+                 join tbl_customer cus on cus.id=t.customerId
+                 left join tbl_contacts con on con.id=t.contactsId
+                 left join tbl_activity a on a.id = t.activityId
+        where t.id = #{id};
+    </select>
+    <select id="getRemarkList" resultType="com.itheima.crm.workbench.domain.TranRemark">
+        select *
+        from tbl_tran_remark
+        where tranId = #{id};
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

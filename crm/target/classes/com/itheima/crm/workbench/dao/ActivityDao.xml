@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace属性是名称空间，必须唯一  接口的全限定类名-->
+<mapper namespace="com.itheima.crm.workbench.dao.ActivityDao">
+    
+    <insert id="addActivity">
+        insert into tbl_activity (
+                  id,
+                  owner,
+                  name,
+                  startDate,
+                  endDate,
+                  cost,
+                  description,
+                  createTime,
+                  createBy)
+        values (
+                  #{id},
+                  #{owner},
+                  #{name},
+                  #{startDate},
+                  #{endDate},
+                  #{cost},
+                  #{description},
+                  #{createTime},
+                  #{createBy}
+            );
+    </insert>
+    <update id="updateActivityInfo">
+        update tbl_activity
+            set owner = #{owner},
+                name = #{name},
+                startDate = #{startDate},
+                endDate = #{endDate},
+                cost = #{cost},
+                description = #{description},
+                editTime = #{editTime},
+                editBy = #{editBy}
+        where id = #{id};
+    </update>
+    <delete id="deleteByIds">
+        delete from tbl_activity where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="queryActivity" resultType="Activity">
+        select a.id,
+               u.name as owner,
+               a.name,
+               a.startDate,
+               a.endDate,
+               a.cost,
+               a.description,
+               a.createTime,
+               a.createBy
+        from tbl_activity a join tbl_user u on a.owner = u.id
+        <where>
+            <if test="owner != null and owner != ''">
+                and u.name like '%' #{owner} '%'
+            </if>
+            <if test="name != null and name != ''">
+                and a.name like '%' #{name} '%'
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and startDate &gt; #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and endDate &lt; #{endDate}
+            </if>
+        </where>
+
+        order by a.createTime desc
+        limit #{indexNumber}, #{pageSize}
+
+    </select>
+    <select id="queryTotal" resultType="java.lang.Integer">
+        select
+            count(*)
+        from tbl_activity a join tbl_user u on a.owner = u.id
+        <where>
+            <if test="owner != null and owner != ''">
+                and u.name like '%' #{owner} '%'
+            </if>
+            <if test="name != null and name != ''">
+                and a.name like '%' #{name} '%'
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and startDate &gt; #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and endDate &lt; #{endDate}
+            </if>
+        </where>
+    </select>
+    <select id="getActivityInfo" resultType="Activity">
+        select
+               id,
+               owner,
+               name,
+               startDate,
+               endDate,
+               cost,
+               description
+        from
+            tbl_activity
+        where id = #{id}
+    </select>
+    <select id="detail" resultType="com.itheima.crm.workbench.domain.Activity">
+        select
+               a.id,
+               u.name as owner,
+               a.name,
+               a.startDate,
+               a.endDate,
+               a.cost,
+               a.description,
+               a.createTime,
+               a.createBy,
+               a.editTime,
+               a.editBy
+        from tbl_activity a join tbl_user u on a.owner = u.id
+        where a.id = #{id};
+    </select>
+    <select id="getActivityListByClueId" resultType="Activity">
+        select
+            car.id as id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from
+            tbl_activity a
+                join tbl_clue_activity_relation car on car.activityId = a.id
+                join tbl_user u on u.id = a.owner
+        where car.clueId = #{clueId}
+    </select>
+    <select id="queryActivityListNotRelationByName" resultType="com.itheima.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from
+        tbl_activity a
+        join tbl_user u on u.id = a.owner
+        where a.name like '%' #{name} '%'
+            and a.id not in
+        (select activityId from tbl_clue_activity_relation where clueId = #{clueId})
+    </select>
+    <select id="getActivityListByName" resultType="com.itheima.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            u.name as owner,
+            a.startDate,
+            a.endDate
+        from tbl_activity a join tbl_user u on a.owner = u.id
+        where a.name like '%' #{name} '%';
+    </select>
+
+</mapper>
